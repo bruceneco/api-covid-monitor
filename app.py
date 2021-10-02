@@ -16,6 +16,7 @@ db = SQLAlchemy(app)
 cipher_suite = Fernet(os.getenv('PASSWORD_ENCRYPT_KEY'))
 migrate = Migrate(app, db)
 jwt_secret = os.getenv('JWT_SECRET')
+admin_key = 'admin_key'
 
 
 class User(db.Model):
@@ -53,6 +54,8 @@ class User(db.Model):
 @app.route('/register', methods=["POST"])
 def register_member():
     body = request.json
+    if body['admin_key'] != admin_key:
+        return {'message': 'Invalid key'}, 401
     if 'code' not in body \
             or 'password' not in body \
             or 'full_name' not in body \
@@ -63,7 +66,6 @@ def register_member():
         return {'message': 'Invalid params'}, 400
     if User.query.filter_by(code=body['code']).first():
         return {'message': 'User already exists'}, 400
-    print(cipher_suite.encrypt(bytes(body['password'], 'utf-8')))
     new_user = User(code=body['code'], full_name=body['full_name'],
                     password=cipher_suite.encrypt(bytes(body['password'], 'utf-8')).decode('utf-8'),
                     birth_date=body['birth_date'], city=body['city'], uf=body['uf'])
@@ -87,10 +89,13 @@ def authenticate():
         return {'message': 'Invalid password'}, 401
 
     del user['birth_date']
-    print(user)
     token = jwt.encode(user, jwt_secret).decode('utf-8')
     return {'token': token}, 200
 
+@app.route('/checkToken', methods=['POST'])
+def check_token():
+    body = request.json
+    return jwt.decode(body['token'], jwt_secret)
 
 if __name__ == '__main__':
     app.run(debug=True)
