@@ -11,7 +11,7 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv('APP_SECRET_KEY')
 app.config[
-    'SQLALCHEMY_DATABASE_URI'] = f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:5432/covid_monitor"
+    'SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 db = SQLAlchemy(app)
 cipher_suite = Fernet(os.getenv('PASSWORD_ENCRYPT_KEY'))
 migrate = Migrate(app, db)
