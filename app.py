@@ -98,4 +98,5 @@ def check_token():
     return jwt.decode(body['token'], jwt_secret)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    db.create_all()
+    app.run()
