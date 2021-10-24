@@ -1,14 +1,17 @@
-from app.app import cipher_suite, jwt_secret, admin_key, db, app
+from app.extensions import cipher_suite, jwt_secret, db
 from app.models.user import User
 import jwt
-from flask import request
+from flask import request, Blueprint
+
+admin_key = 'admin_key'
+auth = Blueprint(name='auth', import_name=__name__, url_prefix='/auth')
 
 
-@app.route('/auth', methods=['POST'])
+@auth.route('/login', methods=['POST'])
 def authenticate():
     body = request.json
     if 'code' not in body or 'password' not in body:
-        return {'message': 'Invalid credendials'}, 400
+        return {'message': 'Invalid credentials'}, 400
     if not User.query.filter_by(code=body['code']).first():
         return {'message': 'User not found'}, 404
 
@@ -23,7 +26,7 @@ def authenticate():
     return {'token': token}, 200
 
 
-@app.route('/register', methods=["POST"])
+@auth.route('/register', methods=["POST"])
 def register_member():
     body = request.json
     if body['admin_key'] != admin_key:
