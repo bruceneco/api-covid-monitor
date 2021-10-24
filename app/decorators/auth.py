@@ -12,13 +12,14 @@ def auth_required(permission_required='default'):
             if token:
                 message = 'Invalid token.'
                 user = decode_token(token)
-                if user and user['permission'] == PERMISSIONS_CODE_MAP[permission_required]:
+                if user and user['permission'] >= PERMISSIONS_CODE_MAP[permission_required]:
                     return function(*args, **kwargs)
                 else:
                     message = 'You do not have enough permissions.'
             
             return {"message": message}, 403
 
+        validate_permissions.__name__ = function.__name__
         return validate_permissions
 
     return decorator

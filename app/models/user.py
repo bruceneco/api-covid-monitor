@@ -9,9 +9,9 @@ class User(db.Model):
     city = db.Column(db.String)
     uf = db.Column(db.String)
     sector = db.Column(db.String)
-    permission = db.Column(db.Integer, nullable=False)
+    permission = db.Column(db.Integer, default=0, nullable=False)
 
-    def __init__(self, code, full_name, password, birth_date, city, uf, sector=None, permission=0):
+    def __init__(self, code, full_name, password, birth_date, city, uf, sector, permission):
         self.code = code
         self.full_name = full_name
         self.password = password

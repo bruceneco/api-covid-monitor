@@ -4,9 +4,9 @@ from app.models.user import User
 import jwt
 from flask import request, Blueprint
 
+from app.utils.auth import decode_token
 from app.utils.cypher import encode_password, decode_password
 
-admin_key = 'admin_key'
 auth = Blueprint(name='auth', import_name=__name__, url_prefix='/auth')
 
 
@@ -47,8 +47,31 @@ def register_member():
                         password=encode_password(body['password']),
                         birth_date=body['birth_date'] if 'birth_date' in body else None,
                         city=body['city'] if 'city' in body else None,
-                        uf=body['uf'] if 'uf' in body else None)
+                        uf=body['uf'] if 'uf' in body else None,
+                        sector=body['sector'] if 'sector' in body else None,
+                        permission=body['permission'] if 'permission' in body else None)
         return new_user.save(), 201
     except Exception as e:
         print(e)
         return {'message': 'There was an error creating user'}, 500
+
+
+@auth.route('/changePassword', methods=['POST'])
+@auth_required()
+def change_password():
+    try:
+        body = request.json
+        if 'old_password' not in body \
+                or 'new_password' not in body:
+            return {'message': 'Invalid params'}, 400
+        user_data = decode_token(request.headers.get('Authorization'))
+        if decode_password(user_data['password']) == body['old_password']:
+            new_user = User.get_user(user_data['code'])
+            new_user.password = encode_password(body['new_password'])
+            new_user.save()
+        else:
+            return {'message': 'Invalid old password.'}, 403
+        return {'message': 'Password changed.'}, 200
+    except Exception as e:
+        print(e)
+        return {'message': 'There was an error updating password.'}, 500
