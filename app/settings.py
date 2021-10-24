@@ -4,3 +4,8 @@ SECRET_KEY = os.getenv('APP_SECRET_KEY')
 SQLALCHEMY_DATABASE_URI = os.getenv('CUSTOM_DB_URL')
 PASSWORD_ENCRYPT_KEY = os.getenv('PASSWORD_ENCRYPT_KEY')
 SQLALCHEMY_TRACK_MODIFICATIONS = True
+PERMISSIONS_CODE_MAP = {
+    'default': 0,
+    'hr': 1,
+    'admin': 9
+}
