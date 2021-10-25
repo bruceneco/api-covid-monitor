@@ -19,7 +19,7 @@ def authenticate():
     if not User.query.filter_by(code=body['code']).first():
         return {'message': 'User not found'}, 404
 
-    user = User.query.filter_by(code=body['code']).first().to_dict()
+    user = User.get_user(body['code']).to_dict()
     decrypted_password = decode_password(user['password'])
 
     if body['password'] != decrypted_password:
@@ -27,7 +27,7 @@ def authenticate():
 
     del user['birth_date']
     token = jwt.encode(user, jwt_secret).decode('utf-8')
-    return {'token': token}, 200
+    return {'token': token, 'permission': user['permission']}, 200
 
 
 @auth.route('/register', methods=["POST"])
