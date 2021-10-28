@@ -46,4 +46,4 @@ class User(db.Model):
             db.session.commit()
             return self.to_dict()
         except Exception:
-            return Exception("Error on saving user to database.")
+            raise Exception("Error on saving user to database.")
