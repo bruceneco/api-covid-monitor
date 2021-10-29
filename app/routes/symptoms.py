@@ -12,14 +12,24 @@ def create_symptom():
     try:
         body = request.json
         if 'symptom' not in body:
-            return {'message': '"symptom" body param is missing.'}, 400
+            return {'message': 'O parâmetro "symptom" está faltando.'}, 400
         elif type(body['symptom']) != str:
-            return {'message': '"symptom" body param must be a string.'}, 400
+            return {'message': 'O parâmetro "symptom" deve ser uma string.'}, 400
         elif Symptom.get_by_name(name=body['symptom']):
-            return {'message': 'Symptom already exists.'}, 403
+            return {'message': 'Sintoma já existente.'}, 403
 
         symptom = Symptom(body['symptom'])
         return symptom.save(), 201
     except Exception as e:
         print(e)
-        return {'message': 'There was an error creating symptom.'}, 500
+        return {'message': 'Houve um problema ao cadastrar o sintoma.'}, 500
+
+
+@symptoms.route('/', methods=['GET'])
+@auth_required(permission_required='default')
+def get_symptoms():
+    try:
+        return {'symptoms': Symptom.get_all()}
+    except Exception as e:
+        print(e)
+        return {'message': 'Houve um problema em procurar todos os sintomas.'}

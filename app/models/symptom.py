@@ -18,7 +18,7 @@ class Symptom(db.Model):
             return self.to_dict()
         except Exception as e:
             print(e)
-            raise Exception('There was an error inserting symptom into database.')
+            raise Exception('Houve um problema ao cadastrar o sintomaÒ.')
 
     @classmethod
     def get_by_name(cls, name: str) -> bool:
@@ -26,4 +26,14 @@ class Symptom(db.Model):
             return cls.query.filter_by(name=name).first()
         except Exception as e:
             print(e)
-            raise Exception('There was an error during get symptom.')
+            raise Exception('Houve um problema ao procurar o sintoma.')
+
+    @classmethod
+    def get_all(cls):
+        try:
+            symptoms = cls.query.all()
+            return [symptom.name for symptom in symptoms]
+
+        except Exception as e:
+            print(e)
+            raise Exception('Houve um problema ao procurar os possíveis sintomas.')
