@@ -5,7 +5,7 @@ class User(db.Model):
     code = db.Column(db.String, primary_key=True)
     full_name = db.Column(db.String, nullable=False)
     password = db.Column(db.String, nullable=False)
-    birth_date = db.Column(db.Date)
+    birth_date = db.Column(db.Integer)
     city = db.Column(db.String)
     uf = db.Column(db.String)
     sector = db.Column(db.String)

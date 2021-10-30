@@ -29,6 +29,14 @@ class Symptom(db.Model):
             raise Exception('Houve um problema ao procurar o sintoma.')
 
     @classmethod
+    def get_by_id(cls, _id: int) -> bool:
+        try:
+            return cls.query.filter_by(id=_id).first()
+        except Exception as e:
+            print(e)
+            raise Exception('Houve um problema ao procurar o sintoma.')
+
+    @classmethod
     def get_all(cls):
         try:
             symptoms = cls.query.all()
