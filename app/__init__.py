@@ -16,7 +16,7 @@ def create_app(config_file='settings.py'):
     app.register_blueprint(auth)
     app.register_blueprint(symptoms)
     app.register_blueprint(health)
-    print(app.url_map)
+
     app.cli.add_command(create_tables)
 
     return app
