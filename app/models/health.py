@@ -2,9 +2,10 @@ from app import db
 
 
 class Health(db.Model):
-    date = db.Column(db.BigInteger, primary_key=True)
-    symptom = db.Column(db.Integer, db.ForeignKey('symptom.id'), primary_key=True)
-    user = db.Column(db.String, db.ForeignKey('user.code'), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.BigInteger)
+    symptom = db.Column(db.Integer, db.ForeignKey('symptom.id'), nullable=True)
+    user = db.Column(db.String, db.ForeignKey('user.code'))
 
     def __init__(self, date, symptom, user):
         self.date = date
@@ -17,9 +18,6 @@ class Health(db.Model):
             'symptom': self.symptom,
             'user': self.user,
         }
-
-    def check_already_exists(self):
-        return Health.query.filter_by(date=self.date, symptom=self.symptom, user=self.user).first()
 
     def save(self):
         try:
@@ -38,3 +36,11 @@ class Health(db.Model):
         except Exception as e:
             print(e)
             raise Exception("Houve um problema ao salvar os sintomas.")
+
+    @classmethod
+    def check_day_registry(cls, date, user_code):
+        try:
+            return cls.query.filter_by(date=date, user=user_code).first()
+        except Exception as e:
+            print(e)
+            raise Exception(e)
