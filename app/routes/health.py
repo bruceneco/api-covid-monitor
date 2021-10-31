@@ -40,3 +40,32 @@ def register_health():
 
     except Exception as e:
         return {'message': str(e)}, 500
+
+
+@health.route('/report', methods=['GET'])
+@auth_required(permission_required='hr')
+def get_report():
+    try:
+        body = request.json
+
+        if "initial_date" not in body or "by_sector" not in body or "final_date" not in body:
+            return {'message': "Parâmetros inválidos."}, 400
+        elif body['initial_date'] >= body['final_date']:
+            return {"message": "Período inválido."}, 400
+        elif type(body['initial_date']) != int or type(body['final_date']) != int:
+            return {'message': "As datas devem ser timestamps do tipo inteiro."}, 400
+        elif type(body['by_sector']) != bool:
+            return {'message': "A opção de ser por setor deve ser um bool."}, 400
+
+        if body['by_sector']:
+            count = Health.count_health_status_by_sector(body['initial_date'], body['final_date'])
+            if not count:
+                return {'message': "Sem registros."}, 404
+            return count, 200
+        else:
+            count = Health.count_health_status(body['initial_date'], body['final_date'])
+            if not count:
+                return {'message': "Sem registros."}, 404
+            return count, 200
+    except Exception as e:
+        return {'message': str(e)}, 500
