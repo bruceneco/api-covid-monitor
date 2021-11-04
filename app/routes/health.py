@@ -69,3 +69,21 @@ def get_report():
             return count, 200
     except Exception as e:
         return {'message': str(e)}, 500
+
+
+@health.route('/frequency', methods=['GET'])
+@auth_required('hr')
+def get_frequency():
+    try:
+        body = request.json
+        try:
+            initial_ts = int(body['initial_date'])
+            final_ts = int(body['final_date'])
+        except:
+            return {'message': 'Parâmetros inválidos.'}, 400
+        if initial_ts >= final_ts:
+            return {'message': 'Período inválido.'}, 400
+        result = Health.get_frequency_by_period(initial_ts, final_ts)
+        return result, 200
+    except Exception as e:
+        return {'message': str(e)}, 500

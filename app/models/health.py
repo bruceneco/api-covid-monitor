@@ -110,3 +110,18 @@ class Health(db.Model):
             else:
                 registries_by_day[date]['healthy'] += 1
         return registries_by_day
+
+    @classmethod
+    def get_frequency_by_period(cls, initial_ts, final_ts):
+        try:
+            result = cls.query.filter(cls.date >= initial_ts, cls.date <= final_ts).distinct(cls.date, cls.user).all()
+            users_frequency = {}
+            for health_registry in result:
+                user_code = health_registry.user
+                if user_code not in users_frequency:
+                    users_frequency[user_code] = 0
+                users_frequency[user_code] += 1
+            return users_frequency
+        except Exception as e:
+            print(e)
+            raise e

@@ -31,7 +31,7 @@ def authenticate():
 
 
 @auth.route('/register', methods=["POST"])
-@auth_required(permission_required='admin')
+# @auth_required(permission_required='admin')
 def register_member():
     try:
         body = request.json
