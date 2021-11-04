@@ -1,9 +1,11 @@
 from flask import Flask
+
 from .commands import create_tables
 from .extensions import db, migrate
 from .routes.auth import auth
 from .routes.health import health
 from .routes.symptoms import symptoms
+from .routes.user import user
 
 
 def create_app(config_file='settings.py'):
@@ -16,6 +18,7 @@ def create_app(config_file='settings.py'):
     app.register_blueprint(auth)
     app.register_blueprint(symptoms)
     app.register_blueprint(health)
+    app.register_blueprint(user)
 
     app.cli.add_command(create_tables)
 

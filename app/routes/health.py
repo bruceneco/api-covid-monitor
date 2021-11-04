@@ -3,7 +3,7 @@ from flask import Blueprint, request
 from app.decorators.auth import auth_required
 from app.models.health import Health
 from app.models.symptom import Symptom
-from app.utils.auth import decode_token
+from app.utils.auth import decode_token, get_user
 
 health = Blueprint('health', import_name=__name__, url_prefix='/health')
 
@@ -85,5 +85,22 @@ def get_frequency():
             return {'message': 'Período inválido.'}, 400
         result = Health.get_frequency_by_period(initial_ts, final_ts)
         return result, 200
+    except Exception as e:
+        return {'message': str(e)}, 500
+
+
+@health.route('/history', methods=['GET'])
+@auth_required()
+def get_history():
+    try:
+        user = get_user()
+        health_registries = Health.get_all_by_user(code=user['code'])
+        registries_by_day = {}
+        for health_registry in health_registries:
+            if health_registry.date not in registries_by_day:
+                registries_by_day[health_registry.date] = []
+            if health_registry.symptom:
+                registries_by_day[health_registry.date].append(Symptom.get_by_id(health_registry.symptom).name)
+        return registries_by_day, 200
     except Exception as e:
         return {'message': str(e)}, 500

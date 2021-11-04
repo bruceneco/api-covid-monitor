@@ -47,3 +47,11 @@ class User(db.Model):
             return self.to_dict()
         except Exception:
             raise Exception("Error on saving user to database.")
+
+    @classmethod
+    def get_all(cls):
+        try:
+            return cls.query.all()
+        except Exception as e:
+            print(e)
+            raise e

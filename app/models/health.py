@@ -125,3 +125,12 @@ class Health(db.Model):
         except Exception as e:
             print(e)
             raise e
+
+    @classmethod
+    def get_all_by_user(cls, code):
+        try:
+            query_result = cls.query.filter(cls.user == code).all()
+            return query_result
+        except Exception as e:
+            print(e)
+            raise e

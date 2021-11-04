@@ -1,5 +1,6 @@
-from app import db
 from time import time
+
+from app import db
 
 
 class Symptom(db.Model):
@@ -32,7 +33,7 @@ class Symptom(db.Model):
             raise Exception('Houve um problema ao procurar o sintoma.')
 
     @classmethod
-    def get_by_id(cls, _id: int) -> bool:
+    def get_by_id(cls, _id: int):
         try:
             return cls.query.filter_by(id=_id).first()
         except Exception as e:
