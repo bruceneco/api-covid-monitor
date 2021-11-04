@@ -1,5 +1,6 @@
 from flask import request
 
+from app.models.user import User
 from app.settings import PERMISSIONS_CODE_MAP
 from app.utils.auth import decode_token
 
@@ -12,8 +13,10 @@ def auth_required(permission_required='default'):
             if token:
                 try:
                     user = decode_token(token)
-
-                    if user and user['permission'] >= PERMISSIONS_CODE_MAP[permission_required]:
+                    storage_user = User.get_user(user['code'])
+                    if storage_user is None or storage_user.password != user['password']:
+                        message = 'Invalid token.'
+                    elif storage_user.permission >= PERMISSIONS_CODE_MAP[permission_required]:
                         return function(*args, **kwargs)
                     else:
                         message = 'You do not have enough permissions.'
