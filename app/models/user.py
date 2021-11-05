@@ -5,7 +5,7 @@ class User(db.Model):
     code = db.Column(db.String, primary_key=True)
     full_name = db.Column(db.String, nullable=False)
     password = db.Column(db.String, nullable=False)
-    birth_date = db.Column(db.Integer)
+    birth_date = db.Column(db.BigInteger)
     city = db.Column(db.String)
     uf = db.Column(db.String)
     sector = db.Column(db.String)
@@ -45,8 +45,8 @@ class User(db.Model):
             db.session.add(self)
             db.session.commit()
             return self.to_dict()
-        except Exception:
-            raise Exception("Error on saving user to database.")
+        except Exception as e:
+            raise e
 
     @classmethod
     def get_all(cls):
