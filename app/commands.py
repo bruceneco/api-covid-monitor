@@ -8,3 +8,9 @@ from .extensions import db
 @with_appcontext
 def create_tables():
     db.create_all()
+
+
+@click.command(name='drop_tables')
+@with_appcontext
+def drop_tables():
+    db.drop_all()

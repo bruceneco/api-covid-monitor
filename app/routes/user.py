@@ -3,6 +3,7 @@ from flask import Blueprint, request
 
 from app.decorators.auth import auth_required
 from app.models.user import User
+from app.utils.cypher import encode_password
 
 user = Blueprint('user', __name__, url_prefix='/user')
 
@@ -29,19 +30,20 @@ def create_many_users():
         except:
             return {"message": "Planilha inválida ou corrompida."}, 400
         sheet = workbook.active
-
         response_draft = []
         created_quantity = 0
         error_quantity = 0
         for row in sheet.iter_rows(0, sheet.max_row):
             try:
+                if not row[0].value:
+                    continue
                 if User.get_user(str(row[0].value)):
                     response_draft.append({row[0].value: "Usuário já existente."})
                     error_quantity += 1
                     continue
                 usr = User(code=str(row[0].value),
                            full_name=str(row[1].value),
-                           password=str(row[2].value),
+                           password=encode_password((str(row[2].value))),
                            birth_date=int(row[3].value),
                            city=str(row[4].value),
                            uf=str(row[5].value),

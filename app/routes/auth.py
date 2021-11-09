@@ -1,9 +1,9 @@
-from app.decorators.auth import auth_required
-from app.extensions import jwt_secret
-from app.models.user import User
 import jwt
 from flask import request, Blueprint
 
+from app.decorators.auth import auth_required
+from app.extensions import jwt_secret
+from app.models.user import User
 from app.utils.auth import decode_token
 from app.utils.cypher import encode_password, decode_password
 
@@ -31,7 +31,7 @@ def authenticate():
 
 
 @auth.route('/register', methods=["POST"])
-# @auth_required(permission_required='admin')
+@auth_required(permission_required='admin')
 def register_member():
     try:
         body = request.json

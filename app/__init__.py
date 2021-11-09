@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 
-from .commands import create_tables
+from .commands import create_tables, drop_tables
 from .extensions import db, migrate
 from .routes.auth import auth
 from .routes.health import health
@@ -22,5 +22,6 @@ def create_app(config_file='settings.py'):
     app.register_blueprint(user)
 
     app.cli.add_command(create_tables)
+    app.cli.add_command(drop_tables)
 
     return app
