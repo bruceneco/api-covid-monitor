@@ -46,24 +46,36 @@ def register_health():
 @auth_required(permission_required='hr')
 def get_report():
     try:
-        body = request.json
+        args = request.args
+        try:
+            int(args['initial_date'])
+            int(args['final_date'])
+        except:
+            raise Exception('Os timestamps devem ser conversíveis para inteiro.')
 
-        if "initial_date" not in body or "by_sector" not in body or "final_date" not in body:
+        if "initial_date" not in args or "by_sector" not in args or "final_date" not in args:
             return {'message': "Parâmetros inválidos."}, 400
-        elif body['initial_date'] >= body['final_date']:
+        elif int(args['initial_date']) >= int(args['final_date']):
             return {"message": "Período inválido."}, 400
-        elif type(body['initial_date']) != int or type(body['final_date']) != int:
-            return {'message': "As datas devem ser timestamps do tipo inteiro."}, 400
-        elif type(body['by_sector']) != bool:
-            return {'message': "A opção de ser por setor deve ser um bool."}, 400
+        try:
+            if "False" != args['by_sector'] != "True":
+                raise Exception()
+        except:
+            raise Exception("A opção de ser por setor deve ser 'True' ou 'False'.")
 
-        if body['by_sector']:
-            count = Health.count_health_status_by_sector(body['initial_date'], body['final_date'])
+        transformed_body = {
+            'by_sector': args['by_sector'] == "True",
+            'initial_date': int(args['initial_date']),
+            'final_date': int(args['final_date']),
+        }
+        if transformed_body['by_sector']:
+            count = Health.count_health_status_by_sector(transformed_body['initial_date'],
+                                                         transformed_body['final_date'])
             if not count:
                 return {'message': "Sem registros."}, 404
             return count, 200
         else:
-            count = Health.count_health_status(body['initial_date'], body['final_date'])
+            count = Health.count_health_status(transformed_body['initial_date'], transformed_body['final_date'])
             if not count:
                 return {'message': "Sem registros."}, 404
             return count, 200
@@ -75,10 +87,10 @@ def get_report():
 @auth_required('hr')
 def get_frequency():
     try:
-        body = request.json
+        args = request.args
         try:
-            initial_ts = int(body['initial_date'])
-            final_ts = int(body['final_date'])
+            initial_ts = int(args['initial_date'])
+            final_ts = int(args['final_date'])
         except:
             return {'message': 'Parâmetros inválidos.'}, 400
         if initial_ts >= final_ts:
